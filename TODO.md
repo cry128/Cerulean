@@ -1,4 +1,14 @@
 ## Next
+- [ ] figure out how Cerulean could aid CI/CD (ie hydra + nix-unit)
+      you can
+  https://github.com/NotAShelf/nix-bindings/tree/main/nix-bindings
+  https://notashelf.github.io/nix-bindings/nix_bindings/#structs
+  https://github.com/nixops4/nix-bindings-rust
+  https://nix.dev/manual/nix/2.34/c-api.html
+
+- [ ] write a key management system that supports activation time, run time, and build time
+    https://docs.aws.amazon.com/kms/latest/developerguide/overview.html
+
 - [ ] formalize how the snow flake system compiles outputs, this would remove the need for `mapNodes`
 - [ ] groups should allow you to set node configuration defaults
 
