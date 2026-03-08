@@ -31,3 +31,11 @@ Minor patches
 ## v0.2.4-alpha
 - `homeManager` flake reference may now be specified in snowflake
 - ``
+
+## v0.2.5-alpha
+>[!TODO]
+> I've been too focused on upcoming changes...
+
+## v0.2.6-alpha
+>[!TODO]
+> I've been too focused on upcoming changes...
