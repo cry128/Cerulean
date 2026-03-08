@@ -48,16 +48,22 @@ in
         class = "snowflake";
         # TODO: abort if inputs contains reserved names
         specialArgs =
-          flakeInputs
-          // {
-            inherit root;
-            inherit systems;
-            inherit (this) snow; # please don't be infinite recursion...
-            inputs = flakeInputs;
-          };
+          (flakeInputs
+            // {
+              inherit systems root;
+              inherit (this) snow;
+              inputs = flakeInputs;
+            })
+          |> (x: builtins.removeAttrs x ["self" "nodes"]);
 
         modules = [
           ./module.nix
+          ({config, ...}: {
+            _module.args = {
+              self = config;
+              nodes = config.nodes.nodes;
+            };
+          })
         ];
       };
 
@@ -86,7 +92,7 @@ in
 
           userArgs = nodes.args // node.args;
           ceruleanArgs = {
-            inherit systems root base node;
+            inherit systems root base nodes node;
             inherit (node) system;
             inherit (this) snow;
             hostname = name;
