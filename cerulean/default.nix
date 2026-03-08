@@ -23,9 +23,6 @@ mix.newMixture args (mixture: {
 
   version = "0.2.6-alpha";
 
-  # WARNING: legacy
-  mkFlake = mixture.snow.flake;
-
   overlays = [
     # build deploy-rs as a package not from the flake input,
     # hence we can rely on a nixpkg binary cache.
