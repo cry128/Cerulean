@@ -1,0 +1,16 @@
+[package]
+name = "snow"
+description = "Cerulean CLI (Wowzers!!)"
+version = "0.1.0"
+authors = ["_cry64 <them@dobutterfliescry.net>"]
+edition = "2024"
+
+[dependencies]
+nix-bindings-store = { git = "https://github.com/nixops4/nix-bindings-rust" }
+nix-bindings-expr = { git = "https://github.com/nixops4/nix-bindings-rust" }
+
+anyhow = "1.0.102"
+clap = { version = "4.5.60", features = ["derive"] }
+log = "0.4.29"
+fern = { version="0.7.1", features = ["colored"] }
+humantime = "2.3.0"
