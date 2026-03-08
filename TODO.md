@@ -1,4 +1,7 @@
 ## Next
+- [ ] formalize how the snow flake system compiles outputs, this would remove the need for `mapNodes`
+- [ ] groups should allow you to set node configuration defaults
+
 - [ ] add `options.experimental` for snowflake
 - [ ] add `legacyImports` support
 
