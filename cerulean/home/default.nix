@@ -12,28 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  mix,
-  inputs,
+  username,
+  lib,
   ...
-} @ args:
-mix.newMixture args (mixture: {
-  submods.public = [
-    ./snow
-  ];
+}: {
+  # NOTE: you can access the system configuration via the `osConfig` arg
 
-  version = "0.2.5-alpha";
+  # WARNING: required for home-manager to work
+  programs.home-manager.enable = true; # user must apply lib.mkForce
+  # Nicely reload systemd units when changing configs
+  systemd.user.startServices = lib.mkDefault "sd-switch";
 
-  # WARNING: legacy
-  mkFlake = mixture.snow.flake;
+  home = {
+    username = lib.mkDefault username;
+    homeDirectory = lib.mkDefault "/home/${username}";
 
-  overlays = [
-    # build deploy-rs as a package not from the flake input,
-    # hence we can rely on a nixpkg binary cache.
-    inputs.deploy-rs.overlays.default
-  ];
-
-  nixosModules = rec {
-    default = cerulean;
-    cerulean = ./nixos;
+    sessionVariables = {
+      NIX_SHELL_PRESERVE_PROMPT = lib.mkDefault 1;
+    };
   };
-})
+}

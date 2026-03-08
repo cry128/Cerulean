@@ -1,14 +1,13 @@
 ## Next
-- [ ] use the Nix module system instead of projectOnto for `cerulean.mkNexus`
+- [ ] formalize how the snow flake system compiles outputs, this would remove the need for `mapNodes`
+- [ ] groups should allow you to set node configuration defaults
+
 - [ ] add `options.experimental` for snowflake
 - [ ] add `legacyImports` support
 
 - [ ] support hs system per dir, ie hosts/<name>/overlays or hosts/<name>/nixpkgs.nix
 
 ## Queued
-- [X] base should automatically be set as the default (dont do anything with the default)
-- [X] try to remove common foot guns, ie abort if the user provides the home-manager or microvm nixosModules
-      since cerulean ALREADY provides these
 - [ ] per node home configuration is a lil jank rn
 
 - [ ] deploy port should default to the first port given to `services.openssh`
@@ -26,29 +25,19 @@
 
 - [ ] go through all flake inputs (recursively) and ENSURE we remove all duplicates by using follows!!
 
-- [X] rename nixos-modules/ to nixos/
-- [X] ensure all machines are in groups.all by default
-
-- [X] fix nixpkgs.nix not working (default not respected)
-- [X] remove dependence on nixpkgs
-
 - [ ] allow multiple privesc methods, the standard is pam_ssh_agent_auth
 
 ## Low Priority
-- [X] rename extraModules to modules?
-- [X] rename specialArgs to args?
-
 - [ ] make an extension to the nix module system (different to mix)
       that allows transformations (ie a stop post config, ie outputs, which
       it then returns instead of config)
+- [ ] support `legacyImports` (?)
 
 - [ ] patch microvm so that acpi=off https://github.com/microvm-nix/microvm.nix/commit/b59a26962bb324cc0a134756a323f3e164409b72
       cause otherwise 2GB causes a failure
 
-- [ ] rewrite the ceru cli in rust
-- [ ] make `ceru` do local and remote deployments
+- [ ] write the cerulean cli
 
-- [ ] support `legacyImports` 
 
 ```nix
 # REF: foxora
