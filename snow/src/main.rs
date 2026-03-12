@@ -1,3 +1,5 @@
+mod nix;
+
 use nix_bindings_expr::eval_state::{gc_register_my_thread, init, EvalState};
 use nix_bindings_store::store::Store;
 use std::collections::HashMap;

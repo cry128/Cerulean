@@ -316,6 +316,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "indoc"
+version = "2.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79cf5c93f93228cf8efb3ba362535fb11199ac548a09ce117c9b1adc3030d706"
+dependencies = [
+ "rustversion",
+]
+
+[[package]]
 name = "is_terminal_polyfill"
 version = "1.70.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -403,7 +412,7 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 [[package]]
 name = "nix-bindings-bdwgc-sys"
 version = "0.2.1"
-source = "git+https://github.com/nixops4/nix-bindings-rust#7de15fa26057c8cf0b6178ff166e529c09ea89a7"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
 dependencies = [
  "bindgen",
  "pkg-config",
@@ -412,7 +421,7 @@ dependencies = [
 [[package]]
 name = "nix-bindings-expr"
 version = "0.2.1"
-source = "git+https://github.com/nixops4/nix-bindings-rust#7de15fa26057c8cf0b6178ff166e529c09ea89a7"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
 dependencies = [
  "anyhow",
  "cstr",
@@ -430,7 +439,7 @@ dependencies = [
 [[package]]
 name = "nix-bindings-expr-sys"
 version = "0.2.1"
-source = "git+https://github.com/nixops4/nix-bindings-rust#7de15fa26057c8cf0b6178ff166e529c09ea89a7"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
 dependencies = [
  "bindgen",
  "nix-bindings-store-sys",
@@ -439,9 +448,63 @@ dependencies = [
 ]
 
 [[package]]
+name = "nix-bindings-fetchers"
+version = "0.2.1"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
+dependencies = [
+ "anyhow",
+ "cstr",
+ "ctor",
+ "nix-bindings-fetchers-sys",
+ "nix-bindings-store",
+ "nix-bindings-util",
+ "tempfile",
+]
+
+[[package]]
+name = "nix-bindings-fetchers-sys"
+version = "0.2.1"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
+dependencies = [
+ "bindgen",
+ "nix-bindings-util-sys",
+ "pkg-config",
+]
+
+[[package]]
+name = "nix-bindings-flake"
+version = "0.2.1"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
+dependencies = [
+ "anyhow",
+ "cstr",
+ "ctor",
+ "nix-bindings-expr",
+ "nix-bindings-fetchers",
+ "nix-bindings-flake-sys",
+ "nix-bindings-store",
+ "nix-bindings-util",
+ "tempfile",
+]
+
+[[package]]
+name = "nix-bindings-flake-sys"
+version = "0.2.1"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
+dependencies = [
+ "bindgen",
+ "nix-bindings-bdwgc-sys",
+ "nix-bindings-expr-sys",
+ "nix-bindings-fetchers-sys",
+ "nix-bindings-store-sys",
+ "nix-bindings-util-sys",
+ "pkg-config",
+]
+
+[[package]]
 name = "nix-bindings-store"
 version = "0.2.1"
-source = "git+https://github.com/nixops4/nix-bindings-rust#7de15fa26057c8cf0b6178ff166e529c09ea89a7"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
 dependencies = [
  "anyhow",
  "nix-bindings-store-sys",
@@ -454,7 +517,7 @@ dependencies = [
 [[package]]
 name = "nix-bindings-store-sys"
 version = "0.2.1"
-source = "git+https://github.com/nixops4/nix-bindings-rust#7de15fa26057c8cf0b6178ff166e529c09ea89a7"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
 dependencies = [
  "bindgen",
  "nix-bindings-util-sys",
@@ -465,7 +528,7 @@ dependencies = [
 [[package]]
 name = "nix-bindings-util"
 version = "0.2.1"
-source = "git+https://github.com/nixops4/nix-bindings-rust#7de15fa26057c8cf0b6178ff166e529c09ea89a7"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
 dependencies = [
  "anyhow",
  "nix-bindings-util-sys",
@@ -474,7 +537,7 @@ dependencies = [
 [[package]]
 name = "nix-bindings-util-sys"
 version = "0.2.1"
-source = "git+https://github.com/nixops4/nix-bindings-rust#7de15fa26057c8cf0b6178ff166e529c09ea89a7"
+source = "git+https://tearforge.net/cry/nixide#716c028bb159e62d3d295c5101d50ee117f027c6"
 dependencies = [
  "bindgen",
  "pkg-config",
@@ -492,9 +555,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.21.3"
+version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
+checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "once_cell_polyfill"
@@ -604,6 +667,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustversion"
+version = "1.0.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
+
+[[package]]
 name = "semver"
 version = "1.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -665,8 +734,11 @@ dependencies = [
  "clap",
  "fern",
  "humantime",
+ "indoc",
  "log",
  "nix-bindings-expr",
+ "nix-bindings-fetchers",
+ "nix-bindings-flake",
  "nix-bindings-store",
 ]
 
@@ -689,9 +761,9 @@ dependencies = [
 
 [[package]]
 name = "tempfile"
-version = "3.26.0"
+version = "3.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82a72c767771b47409d2345987fda8628641887d5466101319899796367354a0"
+checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
  "getrandom",
@@ -960,18 +1032,18 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.8.40"
+version = "0.8.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a789c6e490b576db9f7e6b6d661bcc9799f7c0ac8352f56ea20193b2681532e5"
+checksum = "f2578b716f8a7a858b7f02d5bd870c14bf4ddbbcf3a4c05414ba6503640505e3"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.8.40"
+version = "0.8.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f65c489a7071a749c849713807783f70672b28094011623e200cb86dcb835953"
+checksum = "7e6cc098ea4d3bd6246687de65af3f920c430e236bee1e3bf2e441463f08a02f"
 dependencies = [
  "proc-macro2",
  "quote",

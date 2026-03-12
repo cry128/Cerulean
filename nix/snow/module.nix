@@ -15,9 +15,14 @@
   root,
   snow,
   ...
-}: {
+}: let
+  snowFlake = snow.findImport /${root}/snow;
+in {
   imports = [
+    ./modules
     ./nodes
-    (snow.findImport /${root}/snow)
+    snowFlake
   ];
+
+  outputs = snowFlake;
 }

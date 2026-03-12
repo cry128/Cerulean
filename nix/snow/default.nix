@@ -67,125 +67,129 @@ in
         ];
       };
 
-      nodes = module.config.nodes;
-    in rec {
-      nixosConfigurations = mapNodes nodes (
-        {
-          base,
-          lib,
+      inherit (module) config;
+      nodes = config.nodes;
+    in
+      # TODO: maybe use flake-parts or another module to all merging
+      config.outputs
+      // rec {
+        nixosConfigurations = mapNodes nodes (
+          {
+            base,
+            lib,
+            name,
+            node,
+            groupModules,
+            ...
+          }: let
+            homeManager =
+              if node.homeManager != null
+              then node.homeManager
+              else if nodes.homeManager != null
+              then nodes.homeManager
+              else
+                warn ''
+                  [snowflake] Neither `nodes.homeManager` nor `nodes.nodes.${name}.homeManager` were specified!
+                  [snowflake] home-manager will NOT be used! User configuration will be ignored!
+                ''
+                null;
+
+            userArgs = nodes.args // node.args;
+            ceruleanArgs = {
+              inherit systems root base nodes node;
+              inherit (node) system;
+              inherit (this) snow;
+              hostname = name;
+
+              _cerulean = {
+                inherit inputs userArgs ceruleanArgs homeManager;
+                specialArgs = userArgs // ceruleanArgs;
+              };
+            };
+            specialArgs = assert (userArgs
+              |> attrNames
+              |> all (argName:
+                ! ceruleanArgs ? argName
+                || abort ''
+                  `specialArgs` are like super important to Cerulean my love... </3
+                  But `args.${argName}` is a reserved argument name :(
+                ''));
+              ceruleanArgs._cerulean.specialArgs;
+          in
+            lib.nixosSystem {
+              inherit (node) system;
+              inherit specialArgs;
+              modules =
+                [
+                  self.nixosModules.default
+                  (findImport /${root}/hosts/${name})
+                ]
+                ++ (groupModules root)
+                ++ node.modules
+                ++ nodes.modules;
+            }
+        );
+
+        deploy.nodes = mapNodes nodes ({
           name,
           node,
-          groupModules,
           ...
         }: let
-          homeManager =
-            if node.homeManager != null
-            then node.homeManager
-            else if nodes.homeManager != null
-            then nodes.homeManager
-            else
-              warn ''
-                [snowflake] Neither `nodes.homeManager` nor `nodes.nodes.${name}.homeManager` were specified!
-                [snowflake] home-manager will NOT be used! User configuration will be ignored!
-              ''
-              null;
+          inherit
+            (node.deploy)
+            ssh
+            user
+            interactiveSudo
+            remoteBuild
+            rollback
+            autoRollback
+            magicRollback
+            activationTimeout
+            confirmTimeout
+            ;
 
-          userArgs = nodes.args // node.args;
-          ceruleanArgs = {
-            inherit systems root base nodes node;
-            inherit (node) system;
-            inherit (this) snow;
-            hostname = name;
+          nixosFor = system: inputs.deploy-rs.lib.${system}.activate.nixos;
+        in {
+          hostname =
+            if ssh.host != null
+            then ssh.host
+            else "";
 
-            _cerulean = {
-              inherit inputs userArgs ceruleanArgs homeManager;
-              specialArgs = userArgs // ceruleanArgs;
-            };
+          profilesOrder = ["default"]; # profiles priority
+          profiles.default = {
+            path = nixosFor node.system nixosConfigurations.${name};
+
+            user = user;
+            sudo = "sudo -u";
+            interactiveSudo = interactiveSudo;
+
+            fastConnection = false;
+
+            autoRollback = autoRollback -> rollback;
+            magicRollback = magicRollback -> rollback;
+            activationTimeout = activationTimeout;
+            confirmTimeout = confirmTimeout;
+
+            remoteBuild = remoteBuild;
+            sshUser = ssh.user;
+            sshOpts =
+              ssh.opts
+              ++ (
+                if elem "-p" ssh.opts
+                then []
+                else ["-p" (toString ssh.port)]
+              )
+              ++ (
+                if elem "-A" ssh.opts
+                then []
+                else ["-A"]
+              );
           };
-          specialArgs = assert (userArgs
-            |> attrNames
-            |> all (argName:
-              ! ceruleanArgs ? argName
-              || abort ''
-                `specialArgs` are like super important to Cerulean my love... </3
-                But `args.${argName}` is a reserved argument name :(
-              ''));
-            ceruleanArgs._cerulean.specialArgs;
-        in
-          lib.nixosSystem {
-            inherit (node) system;
-            inherit specialArgs;
-            modules =
-              [
-                self.nixosModules.default
-                (findImport /${root}/hosts/${name})
-              ]
-              ++ (groupModules root)
-              ++ node.modules
-              ++ nodes.modules;
-          }
-      );
+        });
 
-      deploy.nodes = mapNodes nodes ({
-        name,
-        node,
-        ...
-      }: let
-        inherit
-          (node.deploy)
-          ssh
-          user
-          interactiveSudo
-          remoteBuild
-          rollback
-          autoRollback
-          magicRollback
-          activationTimeout
-          confirmTimeout
-          ;
-
-        nixosFor = system: inputs.deploy-rs.lib.${system}.activate.nixos;
-      in {
-        hostname =
-          if ssh.host != null
-          then ssh.host
-          else "";
-
-        profilesOrder = ["default"]; # profiles priority
-        profiles.default = {
-          path = nixosFor node.system nixosConfigurations.${name};
-
-          user = user;
-          sudo = "sudo -u";
-          interactiveSudo = interactiveSudo;
-
-          fastConnection = false;
-
-          autoRollback = autoRollback -> rollback;
-          magicRollback = magicRollback -> rollback;
-          activationTimeout = activationTimeout;
-          confirmTimeout = confirmTimeout;
-
-          remoteBuild = remoteBuild;
-          sshUser = ssh.user;
-          sshOpts =
-            ssh.opts
-            ++ (
-              if elem "-p" ssh.opts
-              then []
-              else ["-p" (toString ssh.port)]
-            )
-            ++ (
-              if elem "-A" ssh.opts
-              then []
-              else ["-A"]
-            );
-        };
-      });
-
-      checks =
-        inputs.deploy-rs.lib
-        |> mapAttrs (system: deployLib:
-          deployLib.deployChecks deploy);
-    };
+        checks =
+          inputs.deploy-rs.lib
+          |> mapAttrs (system: deployLib:
+            deployLib.deployChecks deploy);
+      };
   })

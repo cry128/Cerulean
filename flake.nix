@@ -44,7 +44,7 @@
     nt,
     ...
   } @ inputs:
-    import ./cerulean
+    import ./nix
     {
       inherit inputs self nt;
       inherit (nt) mix;
