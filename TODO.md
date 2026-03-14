@@ -1,10 +1,15 @@
 ## Next
+- [ ] secrets management pleaseeeeeeeeeeeeeeeeeeeeee
+
 - [ ] figure out how Cerulean could aid CI/CD (ie hydra + nix-unit)
       you can
   https://github.com/NotAShelf/nix-bindings/tree/main/nix-bindings
   https://notashelf.github.io/nix-bindings/nix_bindings/#structs
   https://github.com/nixops4/nix-bindings-rust
   https://nix.dev/manual/nix/2.34/c-api.html
+
+- [ ] move home management to `~/.snow/flake.nix`, then the `/etc/snow/flake.nix`
+      will only contain base definitions for the home
 
 - [ ] write a key management system that supports activation time, run time, and build time
     https://docs.aws.amazon.com/kms/latest/developerguide/overview.html
