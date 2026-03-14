@@ -1,20 +1,23 @@
-{ self, lib, moduleLocation, ... }:
-let
-  inherit (lib)
+{
+  lib,
+  moduleLocation,
+  ...
+}: let
+  inherit
+    (lib)
     mapAttrs
     mkOption
     types
     ;
-in
-{
+in {
   options = {
-    flake.nixosModules = mkOption {
+    outputs.nixosModules = mkOption {
       type = types.lazyAttrsOf types.deferredModule;
-      default = { };
+      default = {};
       apply = mapAttrs (k: v: {
         _class = "nixos";
         _file = "${toString moduleLocation}#nixosModules.${k}";
-        imports = [ v ];
+        imports = [v];
       });
       description = ''
         NixOS modules.

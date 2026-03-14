@@ -10,7 +10,6 @@
     concatStringsSep
     filter
     length
-    removeAttrs
     warn
     ;
 
@@ -21,7 +20,7 @@ in {
     snowflake = lib.evalModules {
       class = "snowflake";
       specialArgs = let
-        reservedInputs = {
+        reservedSpecialArgs = {
           inherit (this) snow;
           inherit systems root;
           inputs = flakeInputs;
@@ -29,7 +28,7 @@ in {
 
         warnIfReserved = let
           getReservedNames = names:
-            reservedInputs
+            reservedSpecialArgs
             |> attrNames
             |> filter (name: names?${name});
 
@@ -40,7 +39,7 @@ in {
         in
           (length reservedNames == 0)
           || warn ''
-            [snow] Your `flake.nix` declares inputs using reserved names!
+            [snow] Your `flake.nix` declares inputs with reserved names!
             [snow] These will be accessible only via `inputs.''${NAME}`
             [snow] Please rename the following:
             [snow]   ${concatStringsSep reservedNames ", "}
@@ -48,21 +47,10 @@ in {
           true;
       in
         assert warnIfReserved;
-          flakeInputs
-          // reservedInputs
-          # XXX: TODO:
-          # |> (x: builtins.removeAttrs x ["self" "nodes"]);
-          |> (x: removeAttrs x ["self"]);
+          flakeInputs // reservedSpecialArgs;
 
       modules = [
         ./module.nix
-        ({config, ...}: {
-          _module.args = {
-            self = config;
-            # XXX: TODO:
-            # nodes = config.nodes.nodes;
-          };
-        })
       ];
     };
   in

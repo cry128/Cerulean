@@ -1,16 +1,15 @@
-{ lib, ... }:
-let
-  inherit (lib)
+{lib, ...}: let
+  inherit
+    (lib)
     mkOption
     types
     literalExpression
     ;
-in
-{
+in {
   options = {
-    flake.nixosConfigurations = mkOption {
+    outputs.nixosConfigurations = mkOption {
       type = types.lazyAttrsOf types.raw;
-      default = { };
+      default = {};
       description = ''
         Instantiated NixOS configurations. Used by `nixos-rebuild`.
 

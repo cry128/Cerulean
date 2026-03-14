@@ -1,21 +1,26 @@
-{ lib, flake-parts-lib, ... }:
-let
-  inherit (lib)
+{
+  lib,
+  snow,
+  ...
+}: let
+  inherit
+    (lib)
     mkOption
     types
     ;
-  inherit (flake-parts-lib)
-    mkTransposedPerSystemModule
+  inherit
+    (snow)
+    mkPerSystemFlakeOutput
     ;
 in
-mkTransposedPerSystemModule {
-  name = "legacyPackages";
-  option = mkOption {
-    type = types.lazyAttrsOf types.raw;
-    default = { };
-    description = ''
-      An attribute set of unmergeable values. This is also used by [`nix build .#<attrpath>`](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-build.html).
-    '';
-  };
-  file = ./legacyPackages.nix;
-}
+  mkPerSystemFlakeOutput {
+    name = "legacyPackages";
+    option = mkOption {
+      type = types.lazyAttrsOf types.raw;
+      default = {};
+      description = ''
+        Used for nixpkgs packages, also accessible via `nix build .#<name>` [`nix build .#<name>`](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-build.html).
+      '';
+    };
+    file = ./legacyPackages.nix;
+  }

@@ -1,23 +1,31 @@
-{ lib, flake-parts-lib, ... }:
-let
-  inherit (lib)
+{
+  lib,
+  snow,
+  ...
+}: let
+  inherit
+    (lib)
     mkOption
     types
     ;
-  inherit (flake-parts-lib)
-    mkTransposedPerSystemModule
+
+  inherit
+    (snow)
+    mkPerSystemFlakeOutput
     ;
 
-  programType = lib.types.coercedTo derivationType lib.getExe lib.types.str;
+  derivationType =
+    lib.types.package
+    // {
+      check = lib.isDerivation;
+    };
 
-  derivationType = lib.types.package // {
-    check = lib.isDerivation;
-  };
+  programType = lib.types.coercedTo derivationType lib.getExe lib.types.str;
 
   appType = lib.types.submodule {
     options = {
       type = mkOption {
-        type = lib.types.enum [ "app" ];
+        type = lib.types.enum ["app"];
         default = "app";
         description = ''
           A type tag for `apps` consumers.
@@ -31,7 +39,7 @@ let
       };
       meta = mkOption {
         type = types.lazyAttrsOf lib.types.raw;
-        default = { };
+        default = {};
         # TODO refer to Nix manual 2.25
         description = ''
           Metadata information about the app.
@@ -43,19 +51,19 @@ let
     };
   };
 in
-mkTransposedPerSystemModule {
-  name = "apps";
-  option = mkOption {
-    type = types.lazyAttrsOf appType;
-    default = { };
-    description = ''
-      Programs runnable with nix run `<name>`.
-    '';
-    example = lib.literalExpression ''
-      {
-        default.program = "''${config.packages.hello}/bin/hello";
-      }
-    '';
-  };
-  file = ./apps.nix;
-}
+  mkPerSystemFlakeOutput {
+    name = "apps";
+    option = mkOption {
+      type = types.lazyAttrsOf appType;
+      default = {};
+      description = ''
+        Programs runnable with nix run `<name>`.
+      '';
+      example = lib.literalExpression ''
+        {
+          default.program = "''${config.packages.hello}/bin/hello";
+        }
+      '';
+    };
+    file = ./apps.nix;
+  }

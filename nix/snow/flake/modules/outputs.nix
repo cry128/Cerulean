@@ -9,7 +9,7 @@
     types
     ;
 
-  flake = mkOption {
+  outputs = mkOption {
     type = types.submoduleWith {
       modules = [
         {
@@ -39,8 +39,7 @@
   };
 in {
   options = {
-    inherit flake;
-    output = {inherit flake;};
+    inherit outputs;
   };
 
   config = {inherit (config) flake;};

@@ -18,6 +18,7 @@
 }: {
   imports = [
     ./nodes
+    ./modules
     (snow.findImport /${root}/snow)
   ];
 }
