@@ -19,15 +19,9 @@
   inherit (nt) findImport;
 in
   mix.newMixture args (mixture: {
-    includes = {
-      private = [
-        ./lib/nodes.nix
-      ];
-      public = [
-        ./flake
-        ./lib.nix
-      ];
-    };
+    includes.public = [
+      ./nixpkgs.nix
+    ];
 
     inherit findImport;
   })

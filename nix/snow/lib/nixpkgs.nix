@@ -1,6 +1,7 @@
 {
+  inputs,
   lib,
-  revInfo ? "",
+  ...
 }: let
   inherit
     (lib)
@@ -12,11 +13,12 @@
   # override it at all.
   minVersion = "23.05pre-git";
 
-  isNixpkgsValidVersion =
+  isNixpkgsValidVersion = let
+    revInfo = lib.optional (inputs.nixpkgs?rev) " (nixpkgs-lib.rev: ${inputs.nixpkgs.rev})";
+  in
     (builtins.compareVersions lib.version minVersion < 0)
-    # XXX: TODO: make this message snow specific
     || abort ''
-      The nixpkgs-lib dependency of flake-parts was overridden but is too old.
+      The nixpkgs dependency of snow was overridden but is too old.
       The minimum supported version of nixpkgs-lib is ${minVersion},
       but the actual version is ${lib.version}${revInfo}.
     '';

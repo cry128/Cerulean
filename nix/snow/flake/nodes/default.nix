@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
+  _snow,
   lib,
   specialArgs,
   ...
@@ -25,38 +26,20 @@
   in
     mkOption {
       description = ''
-        Cerulean node declarations.
+        Snowflake node declarations.
       '';
       type = types.submoduleWith {
         inherit specialArgs;
 
         modules = [
-          {
-            imports = [./shared.nix];
-
-            options = {
-              groups = mkOption {
-                type = types.attrs;
-                default = {};
-                example = lib.literalExpression "{ servers = { staging = {}; production = {}; }; }";
-                description = ''
-                  Hierarchical groups that nodes can be a member of.
-                '';
-              };
-
-              nodes = mkOption {
-                type = types.attrsOf (types.submoduleWith {
-                  inherit specialArgs;
-                  modules = [(import ./submodule.nix)];
-                });
-                # example = { ... }; # TODO
-                description = ''
-                  Node (host systems) declarations.
-                '';
-              };
-            };
-          }
+          ./nodes.nix
         ];
       };
     };
+
+  config = {
+    nodes = {
+      base = _snow.inputs.nixpkgs;
+    };
+  };
 }
