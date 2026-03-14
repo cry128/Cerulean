@@ -11,23 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{
-  nt,
-  mix,
-  ...
-} @ args: let
-  inherit (nt) findImport;
-in
-  mix.newMixture args (mixture: {
-    includes = {
-      private = [
-        ./lib/nodes.nix
-      ];
-      public = [
-        ./flake
-        ./lib.nix
-      ];
-    };
-
-    inherit findImport;
-  })
+{mix, ...} @ args:
+mix.newMixture args (mixture: {
+  includes = {
+    public = [
+      ./flake
+      ./lib
+    ];
+  };
+})
