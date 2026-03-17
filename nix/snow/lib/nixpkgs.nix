@@ -14,9 +14,12 @@
   minVersion = "23.05pre-git";
 
   isNixpkgsValidVersion = let
-    revInfo = lib.optional (inputs.nixpkgs?rev) " (nixpkgs-lib.rev: ${inputs.nixpkgs.rev})";
+    revInfo =
+      if inputs.nixpkgs?rev
+      then " (nixpkgs-lib.rev: ${inputs.nixpkgs.rev})"
+      else "";
   in
-    (builtins.compareVersions lib.version minVersion < 0)
+    (builtins.compareVersions lib.version minVersion >= 0)
     || abort ''
       The nixpkgs dependency of snow was overridden but is too old.
       The minimum supported version of nixpkgs-lib is ${minVersion},

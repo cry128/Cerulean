@@ -11,12 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{mix, ...} @ args:
-mix.newMixture args (mixture: {
-  includes = {
-    public = [
-      ./flake
-      ./lib
-    ];
-  };
+{
+  nt,
+  mix,
+  ...
+} @ args:
+mix.newMixture (removeAttrs args ["this"]) (mixture: {
+  submods.public = [
+    ./lib
+  ];
+
+  includes.public = [
+    ./flake
+  ];
 })

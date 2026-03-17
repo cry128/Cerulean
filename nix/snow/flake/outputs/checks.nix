@@ -1,10 +1,10 @@
 {
   config,
-  _snow,
+  _snowFlake,
   ...
 }: {
   outputs.checks =
-    _snow.inputs.deploy-rs.lib
+    _snowFlake.inputs.deploy-rs.lib
     |> builtins.mapAttrs (system: deployLib:
       deployLib.deployChecks config.outputs.deploy);
 }

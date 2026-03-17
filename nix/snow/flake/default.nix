@@ -1,4 +1,5 @@
 {
+  self,
   this,
   inputs,
   systems,
@@ -16,14 +17,20 @@
   inherit (inputs.nixpkgs) lib;
 in {
   # snow.flake
+  # XXX: TODO: stop taking in root as parameter (maybe take self instead?)
   flake = flakeInputs: root: let
     snowflake = lib.evalModules {
       class = "snowflake";
       specialArgs = let
         reservedSpecialArgs = {
-          inherit (this) snow;
+          # inherit (this) snow;
+          snow = this;
           inherit systems root;
           inputs = flakeInputs;
+
+          _snowFlake = {
+            inherit self inputs;
+          };
         };
 
         warnIfReserved = let
@@ -50,7 +57,10 @@ in {
           flakeInputs // reservedSpecialArgs;
 
       modules = [
-        ./module.nix
+        ./nodes
+        ./modules
+        ./outputs
+        (this.lib.findImport /${root}/snow)
       ];
     };
   in

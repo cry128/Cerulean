@@ -10,7 +10,7 @@
     ;
 
   inherit
-    (snow)
+    (snow.lib)
     mkPerSystemFlakeOutput
     ;
 

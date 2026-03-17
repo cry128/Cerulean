@@ -14,8 +14,9 @@
 {
   lib,
   systems,
-  config,
   nodesConfig,
+  groups,
+  groupLibs,
   ...
 }: {
   options = let
@@ -23,6 +24,11 @@
       (lib)
       mkOption
       types
+      ;
+
+    inherit
+      (groupLibs)
+      resolveGroupsInheritance
       ;
 
     flakeRef = types.either types.str types.path;
@@ -113,8 +119,8 @@
         A function from the `groups` hierarchy to a list of groups this node inherits from.
       '';
 
-      apply = groupsFn:
-        groupsFn nodesConfig.groups;
+      # apply = groupsFn:
+      #   groupsFn nodesConfig.groups |> resolveGroupsInheritance;
     };
 
     deploy = {
@@ -266,32 +272,32 @@
     };
   };
 
-  config = let
-    throwGotNull = name:
-      throw ''
-        [snow] `nodes.<name>.${name}` must be set for all nodes! (got: <null>)
-      '';
-    givenSystem =
-      (config.system != null)
-      || throwGotNull "system";
+  # config = let
+  #   throwGotNull = name:
+  #     throw ''
+  #       [snow] `nodes.<name>.${name}` must be set for all nodes! (got: <null>)
+  #     '';
+  #   givenSystem =
+  #     (config.system != null)
+  #     || throwGotNull "system";
 
-    givenBase =
-      (config.base != null)
-      || throwGotNull "base";
+  #   givenBase =
+  #     (config.base != null)
+  #     || throwGotNull "base";
 
-    givenHomeManager =
-      (config.homeManager != null)
-      || throwGotNull "homeManager";
+  #   givenHomeManager =
+  #     (config.homeManager != null)
+  #     || throwGotNull "homeManager";
 
-    givenDeployHost =
-      (config.deploy.ssh.host != null)
-      || throwGotNull "deploy.ssh.host";
-  in
-    assert givenSystem
-    && givenBase
-    && givenHomeManager
-    && givenDeployHost; {
-      # extend these from the nodes configuration
-      inherit (nodesConfig) modules args;
-    };
+  #   givenDeployHost =
+  #     (config.deploy.ssh.host != null)
+  #     || throwGotNull "deploy.ssh.host";
+  # in
+  #   assert givenSystem
+  #   && givenBase
+  #   && givenHomeManager
+  #   && givenDeployHost; {
+  #     # extend these from the nodes configuration
+  #     inherit (nodesConfig) modules args;
+  #   };
 }

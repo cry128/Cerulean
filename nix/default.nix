@@ -15,22 +15,28 @@
   mix,
   inputs,
   ...
-} @ args:
-mix.newMixture args (mixture: {
-  submods.public = [
-    ./snow
-  ];
+} @ args: let
+  mixArgs =
+    args
+    // {
+      inherit (inputs.nixpkgs) lib;
+    };
+in
+  mix.newMixture mixArgs (mixture: {
+    submods.public = [
+      ./snow
+    ];
 
-  version = "0.2.6-alpha";
+    version = "0.2.6-alpha";
 
-  overlays = [
-    # build deploy-rs as a package not from the flake input,
-    # hence we can rely on a nixpkg binary cache.
-    inputs.deploy-rs.overlays.default
-  ];
+    overlays = [
+      # build deploy-rs as a package not from the flake input,
+      # hence we can rely on a nixpkg binary cache.
+      inputs.deploy-rs.overlays.default
+    ];
 
-  nixosModules = rec {
-    default = cerulean;
-    cerulean = ./nixos;
-  };
-})
+    nixosModules = rec {
+      default = cerulean;
+      cerulean = ./nixos;
+    };
+  })

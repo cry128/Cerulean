@@ -15,13 +15,11 @@
   nt,
   mix,
   ...
-} @ args: let
-  inherit (nt) findImport;
-in
-  mix.newMixture args (mixture: {
-    includes.public = [
-      ./nixpkgs.nix
-    ];
-
-    inherit findImport;
-  })
+} @ args:
+mix.newMixture args (mixture: {
+  includes.public = [
+    ./util.nix
+    ./nixpkgs.nix
+    ./nodes.nix
+  ];
+})

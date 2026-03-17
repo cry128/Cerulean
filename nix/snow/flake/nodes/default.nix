@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  _snow,
+  _snowFlake,
   lib,
   specialArgs,
   ...
@@ -39,7 +39,7 @@
 
   config = {
     nodes = {
-      base = _snow.inputs.nixpkgs;
+      base = _snowFlake.inputs.nixpkgs;
     };
   };
 }

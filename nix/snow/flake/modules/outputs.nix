@@ -8,38 +8,39 @@
     mkOption
     types
     ;
-
-  outputs = mkOption {
-    type = types.submoduleWith {
-      modules = [
-        {
-          freeformType =
-            types.lazyAttrsOf
-            (types.unique
-              {
-                message = ''
-                  No option has been declared for this flake output attribute, so its definitions can't be merged automatically.
-                  Possible solutions:
-                    - Load a module that defines this flake output attribute
-                    - Declare an option for this flake output attribute
-                    - Make sure the output attribute is spelled correctly
-                    - Define the value only once, with a single definition in a single module
-                '';
-              }
-              types.raw);
-        }
-      ];
-    };
-    description = ''
-      Raw flake output attributes. Any attribute can be set here, but some
-      attributes are represented by options, to provide appropriate
-      configuration merging.
-    '';
-  };
 in {
   options = {
-    inherit outputs;
+    outputs = mkOption {
+      type = types.submoduleWith {
+        modules = [
+          {
+            freeformType =
+              types.lazyAttrsOf
+              (types.unique
+                {
+                  message = ''
+                    No option has been declared for this flake output attribute, so its definitions can't be merged automatically.
+                    Possible solutions:
+                      - Load a module that defines this flake output attribute
+                      - Declare an option for this flake output attribute
+                      - Make sure the output attribute is spelled correctly
+                      - Define the value only once, with a single definition in a single module
+                  '';
+                }
+                types.raw);
+          }
+        ];
+      };
+      description = ''
+        Raw flake output attributes. Any attribute can be set here, but some
+        attributes are represented by options, to provide appropriate
+        configuration merging.
+      '';
+    };
   };
 
-  config = {inherit (config) flake;};
+  config = {
+    # ensure a minimal version is set
+    outputs = {};
+  };
 }

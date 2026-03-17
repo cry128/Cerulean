@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  _snow,
+  _snowFlake,
+  snow,
+  root,
   lib,
   config,
   specialArgs,
@@ -26,7 +28,10 @@
 
   flakeRef = types.either types.str types.path;
 
-  groupLibs = import ./groups.nix {inherit (_snow.inputs) nt;};
+  groupLibs = import ./groups.nix {
+    inherit snow root;
+    inherit (_snowFlake.inputs) nt;
+  };
 in {
   options = {
     base = lib.mkOption {
@@ -94,8 +99,6 @@ in {
       description = ''
         Hierarchical groups that nodes can be a member of.
       '';
-
-      apply = groupLibs.parseGroupsDecl;
     };
 
     nodes = mkOption {
@@ -103,7 +106,8 @@ in {
         specialArgs =
           specialArgs
           // {
-            nodeConfig = config;
+            nodesConfig = config;
+            inherit groupLibs;
           };
         modules = [./node.nix];
       });
