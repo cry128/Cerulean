@@ -14,16 +14,24 @@
 {
   lib,
   systems,
+  nodesConfig,
+  groups,
+  groupLibs,
   ...
 }: {
-  imports = [./shared.nix];
-
   options = let
     inherit
       (lib)
       mkOption
       types
       ;
+
+    inherit
+      (groupLibs)
+      resolveGroupsInheritance
+      ;
+
+    flakeRef = types.either types.str types.path;
   in {
     enabled = lib.mkOption {
       type = types.bool;
@@ -43,6 +51,65 @@
       '';
     };
 
+    base = lib.mkOption {
+      # In newer Nix versions, particularly with lazy trees, outPath of
+      # flakes becomes a Nix-language path object. We deliberately allow this
+      # to gracefully come through the interface in discussion with @roberth.
+      #
+      # See: https://github.com/NixOS/nixpkgs/pull/278522#discussion_r1460292639
+      type = types.nullOr flakeRef;
+
+      default = nodesConfig.base;
+      defaultText = "nodes.base";
+
+      example = lib.literalExpression "inputs.nixpkgs";
+
+      description = ''
+        The path to the nixpkgs source used to build a system. A `base` package set
+        is required to be set, and can be specified via either:
+        1. `options.nodes.base` (default `base` used for all systems)
+        2. `options.nodes.nodes.<name>.base` (takes prescedence over `options.nodes.base`)
+
+        This can also be optionally set if the NixOS system is not built with a flake but still uses
+        pinned sources: set this to the store path for the nixpkgs sources used to build the system,
+        as may be obtained by `fetchTarball`, for example.
+
+        Note: the name of the store path must be "source" due to
+        <https://github.com/NixOS/nix/issues/7075>.
+      '';
+    };
+
+    homeManager = mkOption {
+      type = types.nullOr flakeRef;
+      default = nodesConfig.homeManager;
+      defaultText = "nodes.homeManager";
+      example = lib.literalExpression "inputs.home-manager";
+      description = ''
+        The path to the home-manager source. A `homeManager` flake reference
+        is required to be set for `homes/` to be evaluated, and can be specified via either:
+        1. `options.nodes.homeManager` (default `homManager` used for all systems)
+        2. `options.nodes.nodes.<name>.homeManager` (takes prescedence over `options.nodes.homeManager`)
+      '';
+    };
+
+    modules = mkOption {
+      type = types.listOf types.raw;
+      default = [];
+      example = lib.literalExpression "[ { environment.systemPackages = [ pkgs.git ]; } ]";
+      description = ''
+        Shared modules to import; equivalent to the NixOS module system's `extraModules`.
+      '';
+    };
+
+    args = mkOption {
+      type = types.attrs;
+      default = {};
+      example = lib.literalExpression "{ inherit inputs; }";
+      description = ''
+        Shared args to provided for each node; equivalent to the NixOS module system's `specialArgs`.
+      '';
+    };
+
     groups = mkOption {
       # TODO: write a custom group type that validates better than types.attrs lol
       type = types.functionTo (types.listOf types.attrs);
@@ -51,6 +118,9 @@
       description = ''
         A function from the `groups` hierarchy to a list of groups this node inherits from.
       '';
+
+      # apply = groupsFn:
+      #   groupsFn nodesConfig.groups |> resolveGroupsInheritance;
     };
 
     deploy = {
@@ -91,7 +161,7 @@
         example = false;
         description = ''
           Whether to enable interactive sudo (password based sudo).
-          NOT RECOMMENDED. Use one of Cerulean's recommended auth methods instead.
+          NOT RECOMMENDED. Use one of Snowflake's recommended auth methods instead.
         '';
       };
 
@@ -164,7 +234,7 @@
 
         user = mkOption {
           type = types.str;
-          default = "cerubld";
+          default = "snowbld";
           example = "custom-user";
           description = ''
             The user to connect to over ssh during deployment.
@@ -183,7 +253,7 @@
         publicKeys = mkOption {
           type = types.listOf types.str;
           default = [];
-          example = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeyZuUUmyUYrYaEJwEMvcXqZFYm1NaZab8klOyK6Imr me@puter"];
+          example = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeyZuUUmyUYrYaEJwEMvcXqZFYm1NaZab8klOyK6Imr me@myputer"];
           description = ''
             SSH public keys that will be authorized to the deployment user.
             This key is intended solely for deployment, allowing for fine-grained permission control.
@@ -201,4 +271,33 @@
       };
     };
   };
+
+  # config = let
+  #   throwGotNull = name:
+  #     throw ''
+  #       [snow] `nodes.<name>.${name}` must be set for all nodes! (got: <null>)
+  #     '';
+  #   givenSystem =
+  #     (config.system != null)
+  #     || throwGotNull "system";
+
+  #   givenBase =
+  #     (config.base != null)
+  #     || throwGotNull "base";
+
+  #   givenHomeManager =
+  #     (config.homeManager != null)
+  #     || throwGotNull "homeManager";
+
+  #   givenDeployHost =
+  #     (config.deploy.ssh.host != null)
+  #     || throwGotNull "deploy.ssh.host";
+  # in
+  #   assert givenSystem
+  #   && givenBase
+  #   && givenHomeManager
+  #   && givenDeployHost; {
+  #     # extend these from the nodes configuration
+  #     inherit (nodesConfig) modules args;
+  #   };
 }

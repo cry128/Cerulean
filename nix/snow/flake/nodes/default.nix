@@ -12,12 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  root,
-  snow,
+  _snowFlake,
+  lib,
+  specialArgs,
   ...
 }: {
-  imports = [
-    ./nodes
-    (snow.findImport /${root}/snow)
-  ];
+  options.nodes = let
+    inherit
+      (lib)
+      mkOption
+      types
+      ;
+  in
+    mkOption {
+      description = ''
+        Snowflake node declarations.
+      '';
+      type = types.submoduleWith {
+        inherit specialArgs;
+
+        modules = [
+          ./nodes.nix
+        ];
+      };
+    };
+
+  config = {
+    nodes = {
+      base = _snowFlake.inputs.nixpkgs;
+    };
+  };
 }

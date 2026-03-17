@@ -11,7 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{lib, ...}: let
+{
+  _snowFlake,
+  snow,
+  root,
+  lib,
+  config,
+  specialArgs,
+  ...
+}: let
   inherit
     (lib)
     mkOption
@@ -19,6 +27,11 @@
     ;
 
   flakeRef = types.either types.str types.path;
+
+  groupLibs = import ./groups.nix {
+    inherit snow root;
+    inherit (_snowFlake.inputs) nt;
+  };
 in {
   options = {
     base = lib.mkOption {
@@ -49,6 +62,18 @@ in {
       '';
     };
 
+    homeManager = mkOption {
+      type = types.nullOr flakeRef;
+      default = null;
+      example = lib.literalExpression "inputs.home-manager";
+      description = ''
+        The path to the home-manager source. A `homeManager` flake reference
+        is required to be set for `homes/` to be evaluated, and can be specified via either:
+        1. `options.nodes.homeManager` (default `homManager` used for all systems)
+        2. `options.nodes.nodes.<name>.homeManager` (takes prescedence over `options.nodes.homeManager`)
+      '';
+    };
+
     modules = mkOption {
       type = types.listOf types.raw;
       default = [];
@@ -67,15 +92,27 @@ in {
       '';
     };
 
-    homeManager = mkOption {
-      type = types.nullOr flakeRef;
-      default = null;
-      example = lib.literalExpression "inputs.home-manager";
+    groups = mkOption {
+      type = types.attrs;
+      default = {};
+      example = lib.literalExpression "{ servers = { staging = {}; production = {}; }; }";
       description = ''
-        The path to the home-manager source. A `homeManager` flake reference
-        is required to be set for `homes/` to be evaluated, and can be specified via either:
-        1. `options.nodes.homeManager` (default `homManager` used for all systems)
-        2. `options.nodes.nodes.<name>.homeManager` (takes prescedence over `options.nodes.homeManager`)
+        Hierarchical groups that nodes can be a member of.
+      '';
+    };
+
+    nodes = mkOption {
+      type = types.attrsOf (types.submoduleWith {
+        specialArgs =
+          specialArgs
+          // {
+            nodesConfig = config;
+            inherit groupLibs;
+          };
+        modules = [./node.nix];
+      });
+      description = ''
+        Node (host systems) declarations.
       '';
     };
   };

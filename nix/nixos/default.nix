@@ -18,13 +18,13 @@
   node,
   pkgs,
   lib,
-  _cerulean,
+  _snow,
   ...
 } @ args: {
   imports =
     [
-      _cerulean.inputs.sops-nix.nixosModules.sops
-      # _cerulean.inputs.microvm.nixosModules.microvm
+      _snow.inputs.sops-nix.nixosModules.sops
+      # _snow.inputs.microvm.nixosModules.microvm
 
       # add support for `options.legacyImports`
       # ./legacy-imports.nix
@@ -36,7 +36,7 @@
       (import /${root}/nixpkgs.nix)
     ]
     # homemanager options declarations
-    ++ (lib.optional (_cerulean.homeManager != null) ./home.nix)
+    ++ (lib.optional (_snow.homeManager != null) ./home.nix)
     # remote deployment configuration
     ++ (lib.optional (node.deploy.ssh.host != null) ./remote-deploy);
 
@@ -46,7 +46,7 @@
     (with pkgs; [
       sops
     ])
-    ++ (with _cerulean.inputs; [
+    ++ (with _snow.inputs; [
       deploy-rs.packages.${system}.default
     ]);
 }

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
-  _cerulean,
+  _snow,
   config,
   root,
   lib,
@@ -30,7 +30,7 @@
     ;
 in {
   imports = [
-    _cerulean.homeManager.nixosModules.default
+    _snow.homeManager.nixosModules.default
   ];
 
   options = {
@@ -69,7 +69,7 @@ in {
           _module.args.username = name;
         });
 
-      extraSpecialArgs = _cerulean.specialArgs;
+      extraSpecialArgs = _snow.specialArgs;
       sharedModules = [
         ../home
 

@@ -1,0 +1,3 @@
+{nt, ...}: {
+  inherit (nt) findImport;
+}

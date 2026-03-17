@@ -12,31 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 {
+  nt,
   mix,
-  inputs,
   ...
-} @ args: let
-  mixArgs =
-    args
-    // {
-      inherit (inputs.nixpkgs) lib;
-    };
-in
-  mix.newMixture mixArgs (mixture: {
-    submods.public = [
-      ./snow
-    ];
-
-    version = "0.2.6-alpha";
-
-    overlays = [
-      # build deploy-rs as a package not from the flake input,
-      # hence we can rely on a nixpkg binary cache.
-      inputs.deploy-rs.overlays.default
-    ];
-
-    nixosModules = rec {
-      default = cerulean;
-      cerulean = ./nixos;
-    };
-  })
+} @ args:
+mix.newMixture args (mixture: {
+  includes.public = [
+    ./util.nix
+    ./nixpkgs.nix
+    ./nodes.nix
+  ];
+})
