@@ -17,6 +17,10 @@
   specialArgs,
   ...
 }: {
+  imports = [
+    ./nixosConfigurations.nix
+  ];
+
   options.nodes = let
     inherit
       (lib)
