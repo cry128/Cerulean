@@ -9,7 +9,9 @@
   user = node.deploy.ssh.user;
   cfg = config.users.users.${user};
 
-  DEFAULT_USER = "cerubld";
+  # use options and config instead of hardcoding
+  # (the same value is accessible in nix/snow/flake/nodes/node.nix)
+  DEFAULT_USER = "snowbld";
 
   isStandardDeployUser = user == DEFAULT_USER;
 in {
@@ -71,7 +73,7 @@ in {
       group = user;
 
       createHome = true;
-      home = "/var/lib/cerulean/cerubld";
+      home = "/var/lib/cerulean/${user}";
 
       useDefaultShell = false;
       shell = pkgs.bash;

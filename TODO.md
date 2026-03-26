@@ -1,3 +1,5 @@
+- [ ] add home support for `me@myputer` syntax that would extend the `me` user
+
 ## Next
 - [ ] formalize how the snow flake system compiles outputs, this would remove the need for `mapNodes`
 - [ ] groups should allow you to set node configuration defaults
